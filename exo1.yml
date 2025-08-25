@@ -1,1 +1,21 @@
-//Premier exercice
+#Premier exercice // API Ping simple
+# Creation d'une spec OpenAPI basique avec :Une route GET/ping qui retourne "pong" en text/plain avec code 200
+openapi: 3.0.3
+info:
+    title: API Ping Simple
+    description: Une API basique qui repond "pong" a un ping
+    version: 1.0.0
+
+paths:
+    /ping:
+        get:
+            summary: Endpoint de test ping
+            description: retourne "pong" pour verifier que l'API fonctionne
+            reponses:
+                '200':
+                    description: Succes - retourne pong
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                example: "pong"
