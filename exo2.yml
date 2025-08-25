@@ -1,1 +1,15 @@
 #Deuxieme exercice
+openapi: 3.0.3
+info:
+ title: API Gestion d'utilisateur
+ Description: API pour recuperer des utilisateurs avec pagination
+ version: 1.0.0
+
+ paths:
+  /users:
+  get:
+   summary: Recuperer la liste des utilisateurs
+   description: Retourne ue liste paginee d'utilisateurs
+   parameters:
+    - name: page
+    in: query
