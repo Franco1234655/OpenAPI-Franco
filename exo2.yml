@@ -1,4 +1,5 @@
 #Deuxieme exercice
+# Manipuler les parametres et les reponses
 openapi: 3.0.3
 info:
   title: API Gestion d'utilisateur
