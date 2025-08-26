@@ -11,8 +11,8 @@ paths: # LeS routes de mon API
         get: #Methode HTTP
             summary: Endpoint de test ping
             description: retourne "pong" pour verifier que l'API fonctionne
-            reponses: # les reponses possibles
-                '200': Code de status HTTP
+            responses: # les reponses possibles
+                '200': #qCode de status HTTP
                     description: Succes - retourne pong
                     content: #Le format de la reponse 
                         text/plain: # Type de contenu (pas de JSON ici)
