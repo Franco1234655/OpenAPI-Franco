@@ -1,15 +1,54 @@
 #Deuxieme exercice
 openapi: 3.0.3
 info:
- title: API Gestion d'utilisateur
- Description: API pour recuperer des utilisateurs avec pagination
- version: 1.0.0
+  title: API Gestion d'utilisateur
+  Description: API pour recuperer des utilisateurs avec pagination
+  version: 1.0.0
 
- paths:
+paths:
   /users:
   get:
-   summary: Recuperer la liste des utilisateurs
-   description: Retourne ue liste paginee d'utilisateurs
-   parameters:
-    - name: page
-    in: query
+    summary: Recuperer la liste des utilisateurs
+    description: Retourne ue liste paginee d'utilisateurs
+    parameters:
+      - name: page
+        in: query
+        description: Numero de page (commence a 1)
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          example: 20
+    responses:
+      '200':
+       description: Liste des utilisateurs recuperee avec succes
+       content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  exampe: 1
+                name:
+                  type: string
+                  example: "Alice"
+                email:
+                  type: string
+                  format: email
+                  example: "alice@example.com"
+      '400':
+        description: Erreur - mauvais types de parametres
+        content:
+          application/json:
+            schema:
+              type: object
+              prospecties:
+                error:
+                  type: string
+                  example: "Bad types for provided query parameters"
+
+      
+
