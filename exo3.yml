@@ -1,10 +1,10 @@
 #Troisieme exercice
 #API Taches CRUD
-OPENAPI: 3.0.3
+openapi: 3.0.3
 info:
   title: API Gestion de Taches
-  descrption: API CRUD pour la gestion de taches (todo list)
-  cersion: 1.0.0
+  description: API CRUD pour la gestion de taches (todo list)
+  version: 1.0.0
 
 paths:
   /tasks:
@@ -47,7 +47,7 @@ post:
           - title: "Faire les courses"
             completed: false
           - title: "Appeler le medecin"
-            completed: fase
+            completed: false
   responses:
     '201':
     description: Taches creees avec succes
@@ -83,3 +83,129 @@ delete:
           ids_to_delete:
             summary: IDs des taches a supprimer
             value: [1, 3, 5]
+  responses:
+    '200':
+      description: Taches supprimees avec succes
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Task'
+          examples:
+            deleted_tasks:
+              summary: Taches supprimees
+              value:
+                - id: 1
+                  title: "Faire les courses"
+                  completed: false
+                - id: 3
+                  title: "Reviser"
+                  completed: true
+
+/tasks/{id}:
+  get:
+    summary: Recuperer une tache par ID
+    description: Retourne une tache specifique par sonidentifiant
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identifiant unique de la tache
+        schema:
+          type: integer
+          example: 1
+    responses:
+      '200':
+        description: Tache trouvee
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schema/Task'
+            examples:
+              single_task:
+                summary: Une tache
+                value:
+                  id: 1
+                  title: "Faire les courses"
+                  completed: false
+      '400':
+        description: Tache non trouvee
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            examples:
+              task_not_found:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                examples:
+                  task_not_found:
+                    summary: Tache introuvable
+                    value:
+                      message: "Task not found"
+
+  delete:
+    summary: Supprimer une tache
+    description: Supprime une tache specifique et la retourne
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identifiant unique de la tache
+        schema:
+    responses:
+      '200':
+        description: Tache supprime avec succes
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+            examples:
+              deleted_task:
+                summary: Tache supprimee
+                value:
+                  id: 1
+                  title: "Faire les courses"
+                  completed: false
+
+components:
+    schemas:
+      Task:
+        type: object
+        required:
+          - id
+          - title
+          - completed
+        properties:
+          id:
+            type: string
+            description: Titre de la tache
+            example: "Faire les courses"
+          completed:
+            type: boolean
+            description: Statut de completion de la tache
+            example: false
+      
+        CreateTask:
+          type: object
+          required:
+            - title
+            - completed
+          properties:
+            title:
+              type: string
+              description: Titre de la tache
+              example: "Faire les courses"
+            completed:
+              type: boolean
+              description: Status de completion de la tache
+              example: false
+      
+      Error:
+        type: object
+        properties:
+          message:
+            type: string
+            decription: Message d'erreur
+            example: "Task not found"
