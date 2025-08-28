@@ -1,211 +1,181 @@
-#Troisieme exercice
-#API Taches CRUD
 openapi: 3.0.3
 info:
-  title: API Gestion de Taches
-  description: API CRUD pour la gestion de taches (todo list)
+  title: API User Profiles
+  description: API de gestion des profils utilisateurs avec sous-schemas
   version: 1.0.0
 
 paths:
-  /tasks:
+  /users/{id}:
     get:
-      summary: Recuperer outes les taches
-      description: Retourne la liste complete des taches
+      summary: Récupère un utilisateur par son identifiant
+      parameters:
+        - $ref: '#/components/parameters/id'
       responses:
         '200':
-          description: Liste des taches recuperee avec succes
+          description: Profil utilisateur complet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '404':
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User not found
+
+  /users:
+    post:
+      summary: Crée de nouveaux utilisateurs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateUserProfile'
+      responses:
+        '201':
+          description: Liste des utilisateurs créés avec identifiants
           content:
             application/json:
               schema:
                 type: array
-                items: '#/components/schemas/Task'
-              examples:
-                tasks_list:
-                summary: Liste de taches
-                value:
-                  - id: 1
-                    title: "Faire les courses"
-                    completed: false
-                  - id: 2
-                    title: "Reviser pour l'examen"
-                    completed: true
+                items:
+                  $ref: '#/components/schemas/UserProfile'
 
-post:
-  summary: Creer de nouvelles taches
-  description: Cree une liste de nouvelles taches
-  requestBody:
-    required: true
-    content:
-      schema:
-      type: array
-      items:
-        $ref: '#/components/schemas/CreateTask'
-      examples:
-      new_tasks:
-        summary: NOuvelles taches a acreer
-        value:
-          - title: "Faire les courses"
-            completed: false
-          - title: "Appeler le medecin"
-            completed: false
-  responses:
-    '201':
-    description: Taches creees avec succes
-    content:
-      application/json:
-        schema:
-          type: array
-          items:
-            $ref: '#/components/schemas/Task'
-        examples:
-          created_tasks:
-            summary: Taches creees avec leurs IDs
-            value:
-              - id: 1
-                title: "Faire es courses"
-                completed: false
-              - id: 2
-                title: "Appeler le medecin"
-                completed: false
-            
-delete:
-  summary: Supprimer plusieurs taches
-  description: Supprime une liste de taches via leurs identifiants
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          type: array
-          items:
-            type: integer
-        examples:
-          ids_to_delete:
-            summary: IDs des taches a supprimer
-            value: [1, 3, 5]
-  responses:
-    '200':
-      description: Taches supprimees avec succes
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Task'
-          examples:
-            deleted_tasks:
-              summary: Taches supprimees
-              value:
-                - id: 1
-                  title: "Faire les courses"
-                  completed: false
-                - id: 3
-                  title: "Reviser"
-                  completed: true
-
-/tasks/{id}:
-  get:
-    summary: Recuperer une tache par ID
-    description: Retourne une tache specifique par sonidentifiant
-    parameters:
-      - name: id
-        in: path
+  /users/{id}/personalInfo:
+    put:
+      summary: Met à jour uniquement les informations personnelles
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
         required: true
-        description: Identifiant unique de la tache
-        schema:
-          type: integer
-          example: 1
-    responses:
-      '200':
-        description: Tache trouvee
         content:
           application/json:
             schema:
-              $ref: '#/components/schema/Task'
-            examples:
-              single_task:
-                summary: Une tache
-                value:
-                  id: 1
-                  title: "Faire les courses"
-                  completed: false
-      '400':
-        description: Tache non trouvee
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
-            examples:
-              task_not_found:
-                schema:
-                  $ref: '#/components/schemas/Error'
-                examples:
-                  task_not_found:
-                    summary: Tache introuvable
-                    value:
-                      message: "Task not found"
+              $ref: '#/components/schemas/PersonalInfo'
+      responses:
+        '200':
+          description: Informations personnelles mises à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
 
-  delete:
-    summary: Supprimer une tache
-    description: Supprime une tache specifique et la retourne
-    parameters:
-      - name: id
-        in: path
+  /users/{id}/address:
+    put:
+      summary: Met à jour uniquement l’adresse
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
         required: true
-        description: Identifiant unique de la tache
-        schema:
-    responses:
-      '200':
-        description: Tache supprime avec succes
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
-            examples:
-              deleted_task:
-                summary: Tache supprimee
-                value:
-                  id: 1
-                  title: "Faire les courses"
-                  completed: false
+              $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: Adresse mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  /users/{id}/preferences:
+    put:
+      summary: Met à jour uniquement les préférences
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preferences'
+      responses:
+        '200':
+          description: Préférences mises à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
 
 components:
-    schemas:
-      Task:
-        type: object
-        required:
-          - id
-          - title
-          - completed
-        properties:
-          id:
-            type: string
-            description: Titre de la tache
-            example: "Faire les courses"
-          completed:
-            type: boolean
-            description: Statut de completion de la tache
-            example: false
-      
-        CreateTask:
-          type: object
-          required:
-            - title
-            - completed
-          properties:
-            title:
-              type: string
-              description: Titre de la tache
-              example: "Faire les courses"
-            completed:
-              type: boolean
-              description: Status de completion de la tache
-              example: false
-      
-      Error:
-        type: object
-        properties:
-          message:
-            type: string
-            decription: Message d'erreur
-            example: "Task not found"
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Identifiant unique de l’utilisateur
+      example: "USR12345"
+
+  schemas:
+    UserProfile:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/PersonalInfo'
+        - $ref: '#/components/schemas/Address'
+        - $ref: '#/components/schemas/Preferences'
+      properties:
+        identifier:
+          type: string
+          example: "USR12345"
+
+    CreateUserProfile:
+      allOf:
+        - $ref: '#/components/schemas/PersonalInfo'
+        - $ref: '#/components/schemas/Address'
+        - $ref: '#/components/schemas/Preferences'
+
+    PersonalInfo:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: "Alice"
+        last_name:
+          type: string
+          example: "Randria"
+        birthdate:
+          type: string
+          format: date
+          example: "1995-07-21"
+        email:
+          type: string
+          format: email
+          example: "alice@example.com"
+
+    Address:
+      type: object
+      properties:
+        address_street:
+          type: string
+          example: "12 Rue Principale"
+        address_city:
+          type: string
+          example: "Antananarivo"
+        address_country:
+          type: string
+          example: "Madagascar"
+        address_postal_code:
+          type: string
+          example: "101"
+
+    Preferences:
+      type: object
+      properties:
+        needs_newsletter:
+          type: boolean
+          example: true
+        language:
+          type: string
+          enum: [mg, fr, eng]
+          example: fr
