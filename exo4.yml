@@ -1,1 +1,124 @@
-#Quatrieme exercice
+openapi: 3.0.3
+info:
+  title: API Recherche de Produits
+  description: API pour rechercher et filtrer des produits avec pagination
+  version: 1.0.0
+
+paths:
+  /products:
+    get:
+      summary: Rechercher des produits
+      description: Retourne une liste de produits avec possibilité de recherche et pagination
+      parameters:
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SearchParam'
+      responses:
+        '200':
+          description: Liste des produits récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              examples:
+                products_found:
+                  summary: Plusieurs produits trouvés
+                  description: Résultat d'une recherche avec plusieurs produits
+                  value:
+                    - name: "Pommes Bio"
+                      expiration_datetime: "2024-09-15T10:30:00Z"
+                      price: 3.50
+                    - name: "Lait Entier"
+                      expiration_datetime: "2024-09-01T08:00:00Z"
+                      price: 1.20
+                    - name: "Pain Complet"
+                      expiration_datetime: "2024-08-28T18:00:00Z"
+                      price: 2.80
+                empty_result:
+                  summary: Aucun produit trouvé
+                  description: Résultat d'une recherche sans correspondance
+                  value: []
+                search_result:
+                  summary: Résultat de recherche "lait"
+                  description: Produits correspondant à la recherche "lait"
+                  value:
+                    - name: "Lait Entier"
+                      expiration_datetime: "2024-09-01T08:00:00Z"
+                      price: 1.20
+                    - name: "Lait d'Amande"
+                      expiration_datetime: "2024-09-10T12:00:00Z"
+                      price: 2.95
+
+components:
+  schemas:
+    Product:
+      type: object
+      required:
+        - name
+        - expiration_datetime
+        - price
+      properties:
+        name:
+          type: string
+          description: Nom du produit
+          example: "Pommes Bio"
+        expiration_datetime:
+          type: string
+          format: date-time
+          description: Date et heure d'expiration du produit
+          example: "2024-09-15T10:30:00Z"
+        price:
+          type: number
+          format: decimal
+          description: Prix du produit en euros
+          minimum: 0
+          example: 3.50
+
+  parameters:
+    LimitParam:
+      name: limit
+      in: query
+      description: Nombre maximum d'éléments à retourner
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      examples:
+        small_limit:
+          summary: Petite limite
+          description: Pour récupérer seulement quelques produits
+          value: 5
+        default_limit:
+          summary: Limite par défaut
+          description: Limite standard pour la pagination
+          value: 20
+        large_limit:
+          summary: Grande limite
+          description: Pour récupérer beaucoup de produits en une fois
+          value: 50
+
+    SearchParam:
+      name: q
+      in: query
+      description: Terme de recherche pour filtrer les produits par nom
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 100
+      examples:
+        fruit_search:
+          summary: Recherche de fruits
+          description: Rechercher tous les produits contenant "pomme"
+          value: "pomme"
+        dairy_search:
+          summary: Recherche de produits laitiers
+          description: Rechercher tous les produits contenant "lait"
+          value: "lait"
+        empty_search:
+          summary: Pas de recherche
+          description: Récupérer tous les produits sans filtre
+          value: ""
