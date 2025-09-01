@@ -1,20 +1,29 @@
-#Deuxieme exercice
+#Deuxième exercice
 # Manipuler les parametres et les reponses
 openapi: 3.0.3
 info:
-  title: API Gestion d'utilisateur
-  description: API pour recuperer des utilisateurs avec pagination
+  title: API Gestion d'Utilisateurs
+  description: API pour récupérer des utilisateurs avec pagination
   version: 1.0.0
 
 paths:
   /users:
     get:
-      summary: Recuperer la liste des utilisateurs
-      description: Retourne ue liste paginee d'utilisateurs
+      summary: Récupérer la liste des utilisateurs
+      description: Retourne une liste paginée d'utilisateurs
       parameters:
         - name: page
           in: query
-          description: Numero de page (commence a 1)
+          description: Numéro de page (commence à 1)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+        - name: size
+          in: query
+          description: Nombre d'utilisateurs par page
           required: false
           schema:
             type: integer
@@ -24,24 +33,36 @@ paths:
             example: 20
       responses:
         '200':
-         description: Liste des utilisateurs recuperee avec succes
-         content:
+          description: Liste des utilisateurs récupérée avec succès
+          content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 1
-                  name:
-                    type: string
-                    example: "Alice"
-                  email:
-                    type: string
-                    format: email
-                    example: "alice@example.com"
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "Alice"
+                    email:
+                      type: string
+                      format: email
+                      example: "alice@example.com"
+              examples:
+                users_list:
+                  summary: Liste d'utilisateurs
+                  value:
+                    - id: 1
+                      name: "Alice"
+                      email: "alice@example.com"
+                    - id: 2
+                      name: "Bob"
+                      email: "bob@example.com"
         '400':
-          description: Erreur - mauvais types de parametres
+          description: Erreur - mauvais types de paramètres
           content:
             application/json:
               schema:
@@ -50,6 +71,8 @@ paths:
                   error:
                     type: string
                     example: "Bad types for provided query parameters"
-
-      
-
+              examples:
+                bad_parameters:
+                  summary: Paramètres invalides
+                  value:
+                    error: "Bad types for provided query parameters"

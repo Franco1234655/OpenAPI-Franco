@@ -1,4 +1,4 @@
-#Cinquieme exercice
+#Cinquième exercice
 openapi: 3.0.3
 info:
   title: API E-commerce avec Authentification
