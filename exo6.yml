@@ -1,1 +1,319 @@
 #Sixieme exercice
+openapi: 3.0.3
+info:
+  title: API Gestion de Profils Utilisateur
+  description: API avancée pour gérer les profils utilisateur avec mise à jour ciblée par sous-ressources
+  version: 1.0.0
+
+paths:
+  /users:
+    post:
+      summary: Créer de nouveaux utilisateurs
+      description: Crée une liste d'utilisateurs sans identifiants (générés automatiquement)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateUserProfile'
+            examples:
+              new_users:
+                summary: Nouveaux utilisateurs à créer
+                description: Liste d'utilisateurs sans identifiants
+                value:
+                  - first_name: "Alice"
+                    last_name: "Martin"
+                    birthdate: "1990-05-15"
+                    email: "alice.martin@email.com"
+                    address_street: "123 Rue de la Paix"
+                    address_city: "Antananarivo"
+                    address_country: "Madagascar"
+                    address_postal_code: "101"
+                    needs_newsletter: true
+                    language: "fr"
+                  - first_name: "Bob"
+                    last_name: "Rakoto"
+                    birthdate: "1985-12-03"
+                    email: "bob.rakoto@email.com"
+                    address_street: "456 Avenue de l'Indépendance"
+                    address_city: "Fianarantsoa"
+                    address_country: "Madagascar"
+                    address_postal_code: "301"
+                    needs_newsletter: false
+                    language: "mg"
+      responses:
+        '201':
+          description: Utilisateurs créés avec succès (avec identifiants générés)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+              examples:
+                created_users:
+                  summary: Utilisateurs créés avec IDs
+                  value:
+                    - identifier: "user_001"
+                      first_name: "Alice"
+                      last_name: "Martin"
+                      birthdate: "1990-05-15"
+                      email: "alice.martin@email.com"
+                      address_street: "123 Rue de la Paix"
+                      address_city: "Antananarivo"
+                      address_country: "Madagascar"
+                      address_postal_code: "101"
+                      needs_newsletter: true
+                      language: "fr"
+                    - identifier: "user_002"
+                      first_name: "Bob"
+                      last_name: "Rakoto"
+                      birthdate: "1985-12-03"
+                      email: "bob.rakoto@email.com"
+                      address_street: "456 Avenue de l'Indépendance"
+                      address_city: "Fianarantsoa"
+                      address_country: "Madagascar"
+                      address_postal_code: "301"
+                      needs_newsletter: false
+                      language: "mg"
+
+  /users/{id}:
+    get:
+      summary: Récupérer un utilisateur complet
+      description: Retourne toutes les informations d'un utilisateur par son identifiant
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      responses:
+        '200':
+          description: Utilisateur trouvé avec toutes ses informations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              examples:
+                complete_user:
+                  summary: Profil utilisateur complet
+                  value:
+                    identifier: "user_001"
+                    first_name: "Alice"
+                    last_name: "Martin"
+                    birthdate: "1990-05-15"
+                    email: "alice.martin@email.com"
+                    address_street: "123 Rue de la Paix"
+                    address_city: "Antananarivo"
+                    address_country: "Madagascar"
+                    address_postal_code: "101"
+                    needs_newsletter: true
+                    language: "fr"
+        '404':
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                user_not_found:
+                  summary: Utilisateur introuvable
+                  value:
+                    message: "User not found"
+
+  /users/{id}/personalInfo:
+    put:
+      summary: Mettre à jour les informations personnelles
+      description: Met à jour uniquement les informations personnelles de l'utilisateur
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalInfo'
+            examples:
+              update_personal:
+                summary: Mise à jour des informations personnelles
+                value:
+                  first_name: "Alice Marie"
+                  last_name: "Martin-Dupont"
+                  birthdate: "1990-05-15"
+                  email: "alice.marie.martin@newemail.com"
+      responses:
+        '200':
+          description: Informations personnelles mises à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  /users/{id}/address:
+    put:
+      summary: Mettre à jour l'adresse
+      description: Met à jour uniquement l'adresse de l'utilisateur
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+            examples:
+              update_address:
+                summary: Nouvelle adresse
+                value:
+                  address_street: "789 Boulevard Ranavalona"
+                  address_city: "Toamasina"
+                  address_country: "Madagascar"
+                  address_postal_code: "501"
+      responses:
+        '200':
+          description: Adresse mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  /users/{id}/preferences:
+    put:
+      summary: Mettre à jour les préférences
+      description: Met à jour uniquement les préférences de l'utilisateur
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preferences'
+            examples:
+              update_preferences:
+                summary: Nouvelles préférences
+                value:
+                  needs_newsletter: false
+                  language: "eng"
+      responses:
+        '200':
+          description: Préférences mises à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+components:
+  schemas:
+    # Schéma principal avec identifiant (pour les réponses)
+    UserProfile:
+      allOf:
+        - type: object
+          required:
+            - identifier
+          properties:
+            identifier:
+              type: string
+              description: Identifiant unique de l'utilisateur (généré automatiquement)
+              example: "user_001"
+        - $ref: '#/components/schemas/PersonalInfo'
+        - $ref: '#/components/schemas/Address'
+        - $ref: '#/components/schemas/Preferences'
+
+    # Schéma pour la création (sans identifiant)
+    CreateUserProfile:
+      allOf:
+        - $ref: '#/components/schemas/PersonalInfo'
+        - $ref: '#/components/schemas/Address'
+        - $ref: '#/components/schemas/Preferences'
+
+    # Sous-schéma : Informations personnelles
+    PersonalInfo:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - birthdate
+        - email
+      properties:
+        first_name:
+          type: string
+          description: Prénom de l'utilisateur
+          example: "Alice"
+        last_name:
+          type: string
+          description: Nom de famille de l'utilisateur
+          example: "Martin"
+        birthdate:
+          type: string
+          format: date
+          description: Date de naissance (format YYYY-MM-DD)
+          example: "1990-05-15"
+        email:
+          type: string
+          format: email
+          description: Adresse email de l'utilisateur
+          example: "alice.martin@email.com"
+
+    # Sous-schéma : Adresse
+    Address:
+      type: object
+      required:
+        - address_street
+        - address_city
+        - address_country
+        - address_postal_code
+      properties:
+        address_street:
+          type: string
+          description: Adresse de la rue
+          example: "123 Rue de la Paix"
+        address_city:
+          type: string
+          description: Ville
+          example: "Antananarivo"
+        address_country:
+          type: string
+          description: Pays
+          example: "Madagascar"
+        address_postal_code:
+          type: string
+          description: Code postal
+          example: "101"
+
+    # Sous-schéma : Préférences
+    Preferences:
+      type: object
+      required:
+        - needs_newsletter
+        - language
+      properties:
+        needs_newsletter:
+          type: boolean
+          description: Souhaite recevoir la newsletter
+          example: true
+        language:
+          type: string
+          enum: ["mg", "fr", "eng"]
+          description: Langue préférée (mg=Malgache, fr=Français, eng=Anglais)
+          example: "fr"
+
+    # Schéma d'erreur
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Message d'erreur
+          example: "User not found"
+
+  parameters:
+    UserIdParam:
+      name: id
+      in: path
+      required: true
+      description: Identifiant unique de l'utilisateur
+      schema:
+        type: string
+      examples:
+        user_id:
+          summary: ID utilisateur
+          value: "user_001"
